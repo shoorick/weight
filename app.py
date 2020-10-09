@@ -23,8 +23,8 @@ app.config['SECRET_KEY'] = 'ytnnjUtdb[,n!'
 
 @app.route('/', methods=('GET', 'POST'))
 def index():
-    entry_title    = request.form.get('entry_title', '')
-    category_id    = request.form.get('category_id', '')
+    entry_title    = request.form.get('entry_title',    '')
+    category_id    = request.form.get('category_id',    '')
     category_title = request.form.get('category_title', '')
 
     if request.method == 'POST':
