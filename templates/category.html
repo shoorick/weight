@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{% block title %} {{ category['title'] }} {% endblock %}</h1>
+  <p>Created at {{ category['created'] }}</p>
+  <p>
+    <a class="waves-effect waves-light btn orange"><i class="material-icons left">create</i> Edit category</a>
+  </p>
+  <p>
+    Show related entries as
+    <a class="waves-effect waves-light btn"><i class="material-icons left">grid_on</i> Table</a>
+    or
+    <a class="waves-effect waves-light btn"><i class="material-icons left">show_chart</i> Graph</a>
+  </p>
+{% endblock %}
