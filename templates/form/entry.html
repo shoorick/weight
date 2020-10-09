@@ -1,0 +1,38 @@
+<form method="POST">
+
+  <div class="row">
+    <div class="input-field col s5">
+      <select name="category_id" id="category_id">
+        <option value="1">Weight</option>
+      </select>
+      <label for="category_id">Choose category</label>
+    </div>
+    <div class="col s1">
+      or
+    </div>
+    <div class="input-field col s6">
+      <input  id="category_title" name="category_title" type="text" class="validate"
+        value="{{ form['category_title'] }}">
+      <label for="category_title">Create new one</label>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="input-field col s12">
+      <input  id="entry_title" name="entry_title" type="text" class="validate"
+        value="{{ form['entry_title'] }}">
+      <label for="entry_title">Value</label>
+    </div>
+  </div>
+
+  <button class="btn waves-effect waves-light" type="submit">
+    <i class="material-icons left">save</i>
+    Store new value
+  </button>
+</form>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('select');
+    var instances = M.FormSelect.init(elems);
+  });
+</script>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, url_for, flash, redirect
 import sqlite3
 from werkzeug.exceptions import abort
 
@@ -19,10 +19,38 @@ def get_category(id):
     return category
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'ytnnjUtdb[,n!'
 
-@app.route('/')
+@app.route('/', methods=('GET', 'POST'))
 def index():
-    return render_template('index.html')
+    entry_title    = request.form.get('entry_title', '')
+    category_id    = request.form.get('category_id', '')
+    category_title = request.form.get('category_title', '')
+
+    if request.method == 'POST':
+        if not entry_title:
+            flash('Value is required')
+        elif not category_id and not category_title:
+            flash('Category must be chosen or created')
+        elif category_title:
+            flash('Category creation not yet implemented')
+        else:
+            connection = db_connect()
+            connection.execute(
+                'INSERT INTO entries (category_id, entry) VALUES (?, ?)',
+                (category_id, entry_title)
+            )
+            connection.commit()
+            connection.close()
+            flash('Saved successfully')
+            return redirect(url_for('index'))
+
+    form = {
+        entry_title:    entry_title,
+        category_id:    category_id,
+        category_title: category_title
+    }
+    return render_template('index.html', form=form)
 
 @app.route('/table')
 def table():
