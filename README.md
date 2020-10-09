@@ -8,6 +8,35 @@ Purpose
 
 There is a just [Flask](https://flask.palletsprojects.com/) example, nothing more :-)
 
+Requirements
+------------
+
+* Python 3
+* pip
+* flask
+
+How to run
+----------
+
+### Initialize database
+
+```bash
+cd db
+python init.py
+```
+
+### Run application in development mode
+
+```bash
+# Choose application and set mode
+export FLASK_APP=app
+export FLASK_ENV=development
+
+# Run development server
+flask run
+```
+Hit `Ctrl+C` to stop the server.
+
 See also
 --------
 
