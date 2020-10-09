@@ -4,7 +4,8 @@
     <title>{% block title %} {% endblock %}</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
 
   <body>
@@ -20,7 +21,7 @@
     <div class="container">
       <div class="row">
       {% for message in get_flashed_messages() %}
-        <div class="col s12 yellow" style="padding:1rem">
+        <div class="col s12 message">
           <i class="material-icons left">info_outline</i>
           {{ message }}
         </div>
