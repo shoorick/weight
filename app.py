@@ -50,7 +50,12 @@ def index():
         category_id:    category_id,
         category_title: category_title
     }
-    return render_template('index.html', form=form)
+
+    connection = db_connect()
+    entries = connection.execute('SELECT * FROM entries LIMIT 5').fetchall()
+    connection.close()
+
+    return render_template('index.html', form = form, entries = entries)
 
 @app.route('/table')
 def table():

@@ -1,0 +1,16 @@
+<table class="striped responsive-table">
+  <thead>
+    <tr>
+      <th>Date and time</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for entry in entries %}
+    <tr>
+      <td>{{ entry['created'] }}</td>
+      <td>{{ entry['entry'  ] }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

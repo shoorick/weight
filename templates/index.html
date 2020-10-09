@@ -3,5 +3,7 @@
 {% block content %}
   {% include 'form/entry.html' %}
   <h1>{% block title %} Overview {% endblock %}</h1>
-  <p>Coming soon</p>
+  <p>Most recent entries</p>
+  {% include 'entries.html' %}
+  <p><a href="{{ url_for('table')}}">See full list</a></p>
 {% endblock %}
