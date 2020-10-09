@@ -1,2 +1,5 @@
 *.komodoproject
+.komodotools
+__pycache__
 activestate.yaml
+env
