@@ -68,3 +68,6 @@ def table():
 def category(id):
     category = get_category(id)
     return render_template('category.html', category=category)
+
+app.add_url_rule('/favicon.ico',
+    redirect_to=url_for('static', filename='favicon.ico'))
