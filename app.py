@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, url_for, flash, redirect
+from flask import Flask, render_template, request, url_for, flash, redirect, send_from_directory
+import os
 import sqlite3
 from werkzeug.exceptions import abort
 
@@ -69,5 +70,9 @@ def category(id):
     category = get_category(id)
     return render_template('category.html', category=category)
 
-app.add_url_rule('/favicon.ico',
-    redirect_to=url_for('static', filename='favicon.ico'))
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, 'static'),
+        'favicon.ico',
+        mimetype='image/vnd.microsoft.icon')
