@@ -1,7 +1,7 @@
 Weight
 ======
 
-Record digital data (about weight for example), store it, and then draw graphs.
+Record digital data (weight for example), store it, ~~and then draw graphs~~ (_not yet implemented_).
 
 Purpose
 -------
