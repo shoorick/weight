@@ -20,7 +20,7 @@ def get_category(id):
     return category
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'ytnnjUtdb[,n!'
+app.config['SECRET_KEY'] = 'ytnnjUtdb[,n!'  # FIXME do not store in git
 
 @app.route('/', methods=('GET', 'POST'))
 def index():
