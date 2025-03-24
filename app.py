@@ -7,6 +7,10 @@ matplotlib.use('Agg')  # Set the backend to non-interactive
 import matplotlib.pyplot as plt
 import io
 import base64
+import plotly.express as px
+import plotly.utils
+import json
+from datetime import datetime
 
 def db_connect():
     connection = sqlite3.connect('db/database.db')
@@ -23,6 +27,12 @@ def get_category(id):
     if category is None:
         abort(404)
     return category
+
+def get_categories():
+    connection = db_connect()
+    categories = connection.execute('SELECT * FROM categories ORDER BY title').fetchall()
+    connection.close()
+    return categories
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ytnnjUtdb[,n!'  # FIXME do not store in git
@@ -144,33 +154,63 @@ def graph(id):
         'SELECT * FROM entries WHERE category_id = ? ORDER BY created ASC',
         (id,)
     ).fetchall()
-    
-    # Get all categories for navigation
-    categories = connection.execute('SELECT * FROM categories').fetchall()
     connection.close()
 
     if not entries:
-        flash('No entries found for this category')
-        return render_template('graph.html', categories=categories, category=category)
+        flash('No data to display')
+        return redirect(url_for('table', id=id))
 
-    # Create the graph
-    plt.figure(figsize=(10, 6))
-    plt.plot([entry['created'] for entry in entries], [float(entry['entry']) for entry in entries], '-o')
-    plt.grid(True)
-    plt.title(f'{category["title"]} Over Time')
-    plt.xlabel('Date')
-    plt.ylabel(category['title'])
-    
-    # Save plot to a temporary buffer
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
-    plt.close()
-    
-    # Encode the image to base64 for embedding in HTML
-    image = base64.b64encode(buf.getvalue()).decode('utf-8')
-    
-    return render_template('graph.html', image=image, categories=categories, category=category)
+    # Prepare data for plotting
+    dates = [datetime.strptime(entry['created'], '%Y-%m-%d %H:%M:%S') for entry in entries]
+    values = [float(entry['entry']) for entry in entries]
+
+    # Create an interactive plot with Plotly
+    fig = px.line(
+        x=dates, 
+        y=values,
+        title=f"{category['title']} Over Time",
+        labels={'x': 'Date', 'y': 'Value'}
+    )
+
+    # Add interactive features
+    fig.update_layout(
+        hovermode='x unified',
+        showlegend=False,
+        margin=dict(l=20, r=20, t=40, b=20),
+        xaxis=dict(
+            rangeslider=dict(visible=True),
+            type='date'
+        ),
+        updatemenus=[
+            dict(
+                type="buttons",
+                showactive=False,
+                buttons=[
+                    dict(
+                        label="Reset Zoom",
+                        method="relayout",
+                        args=[{"xaxis.range": None, "yaxis.range": None}]
+                    )
+                ]
+            )
+        ]
+    )
+    fig.update_traces(
+        mode='lines+markers',
+        line=dict(width=2),
+        marker=dict(size=8),
+        hovertemplate='%{y:.1f}<br>%{x|%Y-%m-%d %H:%M}<extra></extra>'
+    )
+
+    # Convert plot to JSON for rendering in template
+    plot_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return render_template(
+        'graph.html',
+        plot_json=plot_json,
+        category=category,
+        categories=get_categories()
+    )
 
 @app.route('/favicon.ico')
 def favicon():

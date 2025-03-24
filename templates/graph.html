@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<style>
+  #plotly-chart {
+    width: 100%;
+    min-height: 400px;
+  }
+</style>
+{% endblock %}
+
 {% block title %}{{ category.title }} Graph{% endblock %}
 
 {% block content %}
@@ -16,14 +25,25 @@
   </div>
   
   <div class="col s12 m9">
-    <h4>{{ category.title }} Over Time</h4>
-    {% if image %}
     <div class="card">
-      <div class="card-image">
-        <img src="data:image/png;base64,{{ image }}" alt="{{ category.title }} Graph">
+      <div class="card-content">
+        <div id="plotly-chart"></div>
       </div>
     </div>
-    {% endif %}
   </div>
 </div>
+
+<!-- Load Plotly.js and initialize the plot after it's loaded -->
+<script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const plotData = JSON.parse('{{ plot_json|safe }}');
+    Plotly.newPlot('plotly-chart', plotData.data, plotData.layout);
+
+    // Make the plot responsive
+    window.addEventListener('resize', () => {
+      Plotly.Plots.resize('plotly-chart');
+    });
+  });
+</script>
 {% endblock %}
