@@ -1,6 +1,23 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ category.title }} Data{% endblock %}
+
 {% block content %}
-  <h1>{% block title %} Collected data {% endblock %}</h1>
-  {% include 'entries.html' %}
+<div class="row">
+  <div class="col s12 m3">
+    <div class="collection">
+      {% for cat in categories %}
+      <a href="{{ url_for('table', id=cat.id) }}" 
+         class="collection-item{% if cat.id == category.id %} active{% endif %}">
+        {{ cat.title }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  
+  <div class="col s12 m9">
+    <h4>{{ category.title }} Data</h4>
+    {% include 'entries.html' %}
+  </div>
+</div>
 {% endblock %}

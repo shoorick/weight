@@ -63,12 +63,27 @@ def index():
 
     return render_template('index.html', form = form, entries = entries)
 
-@app.route('/table')
-def table():
+@app.route('/table/<int:id>')
+def table(id):
+    # Get category info
+    category = get_category(id)
+    
+    # Get entries for this category
     connection = db_connect()
-    entries = connection.execute('SELECT * FROM entries').fetchall()
+    entries = connection.execute(
+        'SELECT * FROM entries WHERE category_id = ? ORDER BY created DESC',
+        (id,)
+    ).fetchall()
+    
+    # Get all categories for navigation
+    categories = connection.execute('SELECT * FROM categories').fetchall()
     connection.close()
-    return render_template('table.html', entries=entries)
+
+    return render_template('table.html', entries=entries, categories=categories, category=category)
+
+@app.route('/table')
+def table_redirect():
+    return redirect(url_for('table', id=1))
 
 @app.route('/categories/<int:id>')
 def category(id):
