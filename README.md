@@ -33,12 +33,7 @@ make server
 ```
 or
 ```bash
-# Choose application and set mode
-export FLASK_APP=app
-export FLASK_ENV=development
-
-# Run development server
-flask run
+flask --debug run
 ```
 Hit `Ctrl+C` to stop the server.
 

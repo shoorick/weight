@@ -1,5 +1,5 @@
-server: app.py
-	env FLASK_APP=app.py flask run --debugger
+server:
+	flask --debug run
 
 prepare:
 	pip install -r requirements.txt
