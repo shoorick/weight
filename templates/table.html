@@ -1,14 +1,18 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ category.title }} Data{% endblock %}
+{% block title %}{% if category %}{{ category.title }}{% else %}All{% endif %} Data{% endblock %}
 
 {% block content %}
 <div class="row">
   <div class="col s12 m3">
     <div class="collection">
+      <a href="{{ url_for('table_all') }}" 
+         class="collection-item{% if not category %} active{% endif %}">
+        All Categories
+      </a>
       {% for cat in categories %}
       <a href="{{ url_for('table', id=cat.id) }}" 
-         class="collection-item{% if cat.id == category.id %} active{% endif %}">
+         class="collection-item{% if category and cat.id == category.id %} active{% endif %}">
         {{ cat.title }}
       </a>
       {% endfor %}
@@ -16,7 +20,7 @@
   </div>
   
   <div class="col s12 m9">
-    <h4>{{ category.title }} Data</h4>
+    <h4>{% if category %}{{ category.title }}{% else %}All Categories{% endif %} Data</h4>
     {% include 'entries.html' %}
   </div>
 </div>

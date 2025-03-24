@@ -39,7 +39,19 @@ def index():
         elif not category_id and not category_title:
             flash('Category must be chosen or created')
         elif category_title:
-            flash('Category creation not yet implemented')
+            connection = db_connect()
+            cursor = connection.execute(
+                'INSERT INTO categories (title) VALUES (?)',
+                (category_title,)
+            )
+            category_id = cursor.lastrowid
+            connection.execute(
+                'INSERT INTO entries (category_id, entry) VALUES (?, ?)',
+                (category_id, entry_title)
+            )
+            connection.commit()
+            connection.close()
+            flash('Category and entry saved successfully')
         else:
             connection = db_connect()
             connection.execute(
@@ -58,10 +70,26 @@ def index():
     }
 
     connection = db_connect()
-    entries = connection.execute('SELECT * FROM entries LIMIT 5').fetchall()
+    entries = connection.execute('''
+        SELECT entries.*, categories.title as category_title 
+        FROM entries 
+        LEFT JOIN categories ON entries.category_id = categories.id 
+        ORDER BY entries.created DESC 
+        LIMIT 5
+    ''').fetchall()
+    categories = connection.execute('SELECT * FROM categories ORDER BY title').fetchall()
+    
+    # Get the most recently used category_id if no category is selected
+    if not category_id and not category_title:
+        last_entry = connection.execute(
+            'SELECT category_id FROM entries ORDER BY created DESC LIMIT 1'
+        ).fetchone()
+        if last_entry:
+            form['category_id'] = str(last_entry['category_id'])
+    
     connection.close()
 
-    return render_template('index.html', form = form, entries = entries)
+    return render_template('index.html', form=form, entries=entries, categories=categories, category=None)
 
 @app.route('/table/<int:id>')
 def table(id):
@@ -82,8 +110,23 @@ def table(id):
     return render_template('table.html', entries=entries, categories=categories, category=category)
 
 @app.route('/table')
+def table_all():
+    # Get all entries
+    connection = db_connect()
+    entries = connection.execute('''
+        SELECT entries.*, categories.title as category_title
+        FROM entries
+        LEFT JOIN categories ON entries.category_id = categories.id
+        ORDER BY entries.created DESC
+    ''').fetchall()
+    # Get all categories for navigation
+    categories = connection.execute('SELECT * FROM categories ORDER BY title').fetchall()
+    connection.close()
+    return render_template('table.html', entries=entries, categories=categories, category=None)
+
+@app.route('/table_redirect')
 def table_redirect():
-    return redirect(url_for('table', id=1))
+    return redirect(url_for('table_all'))
 
 @app.route('/categories/<int:id>')
 def category(id):
