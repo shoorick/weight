@@ -2,6 +2,11 @@ from flask import Flask, render_template, request, url_for, flash, redirect, sen
 import os
 import sqlite3
 from werkzeug.exceptions import abort
+import matplotlib
+matplotlib.use('Agg')  # Set the backend to non-interactive
+import matplotlib.pyplot as plt
+import io
+import base64
 
 def db_connect():
     connection = sqlite3.connect('db/database.db')
@@ -47,9 +52,9 @@ def index():
             return redirect(url_for('index'))
 
     form = {
-        entry_title:    entry_title,
-        category_id:    category_id,
-        category_title: category_title
+        'entry_title':    entry_title,
+        'category_id':    category_id,
+        'category_title': category_title
     }
 
     connection = db_connect()
@@ -69,6 +74,31 @@ def table():
 def category(id):
     category = get_category(id)
     return render_template('category.html', category=category)
+
+@app.route('/graph')
+def graph():
+    connection = db_connect()
+    entries = connection.execute('SELECT * FROM entries ORDER BY created ASC').fetchall()
+    connection.close()
+
+    # Create the graph
+    plt.figure(figsize=(10, 6))
+    plt.plot([entry['created'] for entry in entries], [float(entry['entry']) for entry in entries], '-o')
+    plt.grid(True)
+    plt.title('Weight Over Time')
+    plt.xlabel('Date')
+    plt.ylabel('Weight')
+    
+    # Save plot to a temporary buffer
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    plt.close()
+    
+    # Encode the image to base64 for embedding in HTML
+    image = base64.b64encode(buf.getvalue()).decode('utf-8')
+    
+    return render_template('graph.html', image=image)
 
 @app.route('/favicon.ico')
 def favicon():

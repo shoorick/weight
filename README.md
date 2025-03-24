@@ -1,7 +1,7 @@
 Weight
 ======
 
-Record digital data (weight for example), store it, ~~and then draw graphs~~ (_not yet implemented_).
+Record numeric data (weight for example), store it, and then draw graphs.
 
 Purpose
 -------
@@ -14,6 +14,7 @@ Requirements
 * Python 3
 * pip
 * flask
+* matplotlib
 
 How to run
 ----------
@@ -27,6 +28,10 @@ python init.py
 
 ### Run application in development mode
 
+```bash
+make server
+```
+or
 ```bash
 # Choose application and set mode
 export FLASK_APP=app
