@@ -1,16 +1,29 @@
 {% extends 'base.html' %}
 
-{% block title %}Weight Graph{% endblock %}
+{% block title %}{{ category.title }} Graph{% endblock %}
 
 {% block content %}
 <div class="row">
-  <div class="col s12">
-    <h4>Weight Over Time</h4>
+  <div class="col s12 m3">
+    <div class="collection">
+      {% for cat in categories %}
+      <a href="{{ url_for('graph', id=cat.id) }}" 
+         class="collection-item{% if cat.id == category.id %} active{% endif %}">
+        {{ cat.title }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  
+  <div class="col s12 m9">
+    <h4>{{ category.title }} Over Time</h4>
+    {% if image %}
     <div class="card">
       <div class="card-image">
-        <img src="data:image/png;base64,{{ image }}" alt="Weight Graph">
+        <img src="data:image/png;base64,{{ image }}" alt="{{ category.title }} Graph">
       </div>
     </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

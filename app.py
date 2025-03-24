@@ -75,19 +75,33 @@ def category(id):
     category = get_category(id)
     return render_template('category.html', category=category)
 
-@app.route('/graph')
-def graph():
+@app.route('/graph/<int:id>')
+def graph(id):
+    # Get category info
+    category = get_category(id)
+    
+    # Get entries for this category
     connection = db_connect()
-    entries = connection.execute('SELECT * FROM entries ORDER BY created ASC').fetchall()
+    entries = connection.execute(
+        'SELECT * FROM entries WHERE category_id = ? ORDER BY created ASC',
+        (id,)
+    ).fetchall()
+    
+    # Get all categories for navigation
+    categories = connection.execute('SELECT * FROM categories').fetchall()
     connection.close()
+
+    if not entries:
+        flash('No entries found for this category')
+        return render_template('graph.html', categories=categories, category=category)
 
     # Create the graph
     plt.figure(figsize=(10, 6))
     plt.plot([entry['created'] for entry in entries], [float(entry['entry']) for entry in entries], '-o')
     plt.grid(True)
-    plt.title('Weight Over Time')
+    plt.title(f'{category["title"]} Over Time')
     plt.xlabel('Date')
-    plt.ylabel('Weight')
+    plt.ylabel(category['title'])
     
     # Save plot to a temporary buffer
     buf = io.BytesIO()
@@ -98,7 +112,7 @@ def graph():
     # Encode the image to base64 for embedding in HTML
     image = base64.b64encode(buf.getvalue()).decode('utf-8')
     
-    return render_template('graph.html', image=image)
+    return render_template('graph.html', image=image, categories=categories, category=category)
 
 @app.route('/favicon.ico')
 def favicon():
