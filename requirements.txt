@@ -1,3 +1,5 @@
 flask
 matplotlib
 plotly
+pytest
+pytest-flask
